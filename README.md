@@ -1,16 +1,14 @@
-![Build status](https://github.com/recognizebv/symfony-docker/workflows/Build/badge.svg)
+Image Fork from excellent ![Build status](https://github.com/recognizebv/symfony-docker/workflows/Build/badge.svg)
 
-# symfony-docker
-Docker image made to run symfony application. Check https://hub.docker.com/r/recognizebv/symfony-docker
+# compilation
+- a script build-dev.sh for compilation developpement version
+- a other for production
 
 ## Available variants
-- php7.1 - php7.4 (PHP Version)
+- php7.1 - php8 (PHP Version)
 - -node10, -node-12, -node-14 (Node LTS versions)
 - -image (vips and imagick)
 - -dev (XDebug)
-
-example:
-php7.4-node14-image-dev
 
 [List of tags per php version](https://github.com/RecognizeBV/symfony-docker/releases)
 [All tags](https://hub.docker.com/r/recognizebv/symfony-docker/tags)
@@ -18,31 +16,6 @@ php7.4-node14-image-dev
 ## What's here?
 
 This repository is a source code for following docker images that allow relatively easily work with symfony php framework.
-
-## What is the concept here?
-
-You use php-dev images to develop by mounting your local directory into machine.
-You use non-dev images to copy app code into image and then deploy your application to stage/live environments.
-
-## What is the difference between php* and php*-dev?
-
-Non *dev* images are intended to be used in production. *Dev* images have xdebug installed additionally, so you can use it for debugging.
-
-# Usage
-
-### Development env with docker-compose.yml
-
-You can you this docker-compose.yml file to develop:
-
-```
-www:
-  image: recognizebv/symfony-docker:php7.1-dev
-  volumes:
-    - ".:/var/www/html"
-  ports:
-    - "80:80"
-```
-Of course you are free to add linked containers like database, caching etc.
 
 ### Adjust your symfony app kernel to write cache and logs to /tmp dir
 ```
@@ -56,8 +29,6 @@ Of course you are free to add linked containers like database, caching etc.
         return sys_get_temp_dir().'/logs/'.$this->getEnvironment();
     }
 ```
-
-Use ```docker-compose up``` command to start your development environment.
 
 ### Output logs to stderr (optional)
 
