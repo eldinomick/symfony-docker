@@ -1,5 +1,5 @@
 
-docker build -t cadotinfo/nsymfony . \
+docker build -t cadotinfo/nsymfony-dev . \
 --build-arg BASE_IMAGE=php:7.4-apache  \
 --build-arg NODE_VERSION=v16.10.0 \
 --build-arg ENABLE_IMAGE_SUPPORT=true \

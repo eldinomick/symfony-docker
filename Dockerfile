@@ -9,6 +9,7 @@ RUN rm /etc/apache2/conf-available/security.conf && rm /etc/apache2/conf-enabled
 
 RUN apt-get update \
     && apt-get install -y libicu-dev git wget unzip libpng-dev libjpeg62-turbo-dev libzip-dev libpq-dev \
+    && apt-get install -y nano sudo net-tools \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -76,16 +77,24 @@ RUN $ENABLE_IMAGE_SUPPORT \
  && docker-php-ext-enable vips imagick \
  || true
 
-ARG ENABLE_DEBUG=false
-RUN $ENABLE_DEBUG \
- && pecl install -f xdebug \
- && pecl clear-cache && rm -rf /tmp/pear \
- && echo "zend_extension=$(ls /usr/local/lib/php/*/*/xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
- && echo "xdebug.remote_enable = On" >> /usr/local/etc/php/conf.d/xdebug.ini \
- && echo "xdebug.remote_autostart = On" >> /usr/local/etc/php/conf.d/xdebug.ini \
- && echo "xdebug.remote_connect_back = On" >> /usr/local/etc/php/conf.d/xdebug.ini \
- && echo "xdebug.coverage_enable = Off" >> /usr/local/etc/php/conf.d/xdebug.ini \
- && sed -i.bak "s/opcache.validate_timestamps=0/opcache.validate_timestamps=1/g" /usr/local/etc/php/conf.d/symfony.ini \
+RUN sed -i.bak "s/opcache.validate_timestamps=0/opcache.validate_timestamps=1/g" /usr/local/etc/php/conf.d/symfony.ini \
  && sed -i.bak "s/display_errors = 0/display_errors = 1/g" /usr/local/etc/php/conf.d/general.ini \
  && sed -i.bak "s/display_startup_errors = 0/display_startup_errors = 1/g" /usr/local/etc/php/conf.d/general.ini \
  || true
+
+RUN curl -sS https://get.symfony.com/cli/installer | bash
+RUN mv /root/.symfony/bin/symfony /usr/local/bin/symfony
+RUN echo 'alias sc="/usr/local/bin/symfony console"' >> ~/.bashrc
+RUN echo 'alias ls="ls --color"' >> ~/.bashrc
+
+ARG ENABLE_DEBUG=false
+RUN $ENABLE_DEBUG \
+ && pecl install -f xdebug \
+ && pecl clear-cache && rm -rf /tmp/pear 
+RUN echo "zend_extension=$(ls /usr/local/lib/php/*/*/xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.remote_enable=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.remote_autostart=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.client_host=172.17.0.1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.mode=develop,debug,coverage,trace,profile,gcstats" >> /usr/local/etc/php/conf.d/xdebug.ini 
+ 
