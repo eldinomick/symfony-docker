@@ -1,15 +1,11 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
-ADD apache2.conf /etc/apache2/apache2.conf
-ADD 000-default.conf /etc/apache2/sites-available/000-default.conf
-ADD symfony.ini /usr/local/etc/php/conf.d/symfony.ini
-ADD mpm_prefork.conf /etc/apache2/mods-available/mpm_prefork.conf
-RUN rm /etc/apache2/conf-available/security.conf && rm /etc/apache2/conf-enabled/security.conf
+
 
 RUN apt-get update \
-    && apt-get install -y libicu-dev git wget unzip libpng-dev libjpeg62-turbo-dev libzip-dev libpq-dev \
-    && apt-get install -y nano sudo net-tools \
+    && apt-get install -y libicu-dev git wget unzip libpng-dev libjpeg62-turbo-dev libzip-dev libpq-dev
+RUN apt-get install -y nano sudo net-tools ghostscript unzip git wget imagemagick \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -43,8 +39,7 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /usr/local/bin/composer \
-    && mkdir /var/www/html/public
+    && mv composer.phar /usr/local/bin/composer 
 
 ARG NODE_VERSION
 RUN curl -SLO "https://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-linux-x64.tar.xz" \
@@ -98,3 +93,10 @@ RUN echo "zend_extension=$(ls /usr/local/lib/php/*/*/xdebug.so)" > /usr/local/et
  && echo "xdebug.client_host=172.17.0.1" >> /usr/local/etc/php/conf.d/xdebug.ini \
  && echo "xdebug.mode=develop,debug,coverage,trace,profile,gcstats" >> /usr/local/etc/php/conf.d/xdebug.ini 
  
+ADD apache2.conf /etc/apache2/apache2.conf
+ADD 000-default.conf /etc/apache2/sites-available/000-default.conf
+ADD symfony.ini /usr/local/etc/php/conf.d/symfony.ini
+ADD mpm_prefork.conf /etc/apache2/mods-available/mpm_prefork.conf
+RUN rm /etc/apache2/conf-available/security.conf && rm /etc/apache2/conf-enabled/security.conf
+
+WORKDIR /app
