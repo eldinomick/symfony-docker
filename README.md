@@ -1,8 +1,28 @@
 Image Fork from excellent ![Build status](https://github.com/recognizebv/symfony-docker/workflows/Build/badge.svg)
 
+
 # compilation
 - a script build-dev.sh for compilation developpement version
 - a other for production
+
+## Docker-compose
+```
+version: '3'
+services:
+    CE:
+        image: cadotinfo/nsymfony-dev:latest or cadotinfo/nsymfony-prod:latest
+        container_name: CE
+        volumes:
+            - .:/app/
+        networks:
+            - web
+        restart: always
+        ports:
+            - 49800:80
+networks:
+    web:
+        external: true
+```
 
 ## Available variants
 - php7.1 - php8 (PHP Version)
